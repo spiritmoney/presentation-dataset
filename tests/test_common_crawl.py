@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock, patch
 
-from src.crawlers.common_crawl import discover_common_crawl
+from src.crawlers.common_crawl import FALLBACK_INDEXES, discover_common_crawl, list_crawl_indexes
 from src.crawlers.url_filter import filter_catalog_rows, is_catalog_candidate
 
 
@@ -23,6 +23,16 @@ def test_filter_catalog_rows():
     out = filter_catalog_rows(rows, apply_denylist=False)
     assert len(out) == 1
     assert out[0]["url"].endswith(".pptx")
+
+
+def test_list_crawl_indexes_falls_back_on_503():
+    client = MagicMock()
+    resp = MagicMock()
+    resp.status_code = 503
+    client.get.return_value = resp
+
+    indexes = list_crawl_indexes(client, max_attempts=2)
+    assert indexes == FALLBACK_INDEXES
 
 
 @patch("src.crawlers.common_crawl.list_crawl_indexes")

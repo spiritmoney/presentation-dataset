@@ -101,6 +101,7 @@ def refill_global_queue(
                 limit=flags["common_crawl_limit"],
                 worker_id=worker_id,
                 worker_count=worker_count,
+                cache_path=data_dir / "state" / "common_crawl_indexes.json",
             )
             for row in hits:
                 row["discovered_at"] = _now_iso()

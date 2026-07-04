@@ -65,6 +65,8 @@ def _collect_once(data_dir: Path, perf: dict) -> int:
     discovered: list[dict] = []
 
     cc_limit = int(perf.get("common_crawl_limit", flags.get("common_crawl_limit", 10000)))
+    cc_limit = max(500, cc_limit // worker_count)
+    cc_cache = data_dir / "state" / "common_crawl_indexes.json"
     patterns = sources.get("common_crawl_patterns") or [
         "*.pptx",
         "*.ppt",
@@ -79,6 +81,7 @@ def _collect_once(data_dir: Path, perf: dict) -> int:
             limit=cc_limit,
             worker_id=worker_id,
             worker_count=worker_count,
+            cache_path=cc_cache,
         )
         discovered.extend(hits)
         state["common_crawl_page"] = cc_state.get("page", state.get("common_crawl_page", 0))
@@ -170,6 +173,9 @@ def run_url_collection(
         f"{target:,}",
     )
 
+    # Stagger workers to avoid hammering Common Crawl at the same instant
+    time.sleep(_worker_id() * 5)
+
     while True:
         current = store.count_url_catalog()
         state.accepted_count = current
@@ -182,8 +188,13 @@ def run_url_collection(
             logger.info("URL catalog goal reached: %s", f"{current:,}")
             return current
 
-        added = _collect_once(base, perf)
+        try:
+            added = _collect_once(base, perf)
+        except Exception as e:
+            logger.exception("Collect cycle failed (will retry): %s", e)
+            added = 0
+
         if added == 0:
-            time.sleep(max(pause_sec, 5.0))
+            time.sleep(max(pause_sec * 3, 15.0))
         else:
             time.sleep(pause_sec)
