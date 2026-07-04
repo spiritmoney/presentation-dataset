@@ -160,6 +160,82 @@ class PostgresStore:
             ).fetchone()
             return int(row["nbytes"]) if row else 0
 
+    # --- URL catalog (metadata-only collection; download later) ---
+
+    def count_url_catalog(self, status: str | None = None) -> int:
+        with self._connect() as conn:
+            if status:
+                row = conn.execute(
+                    "SELECT COUNT(*)::bigint AS n FROM url_catalog WHERE status = %s",
+                    (status,),
+                ).fetchone()
+            else:
+                row = conn.execute("SELECT COUNT(*)::bigint AS n FROM url_catalog").fetchone()
+            return int(row["n"]) if row else 0
+
+    def insert_url_catalog_batch(self, rows: list[dict[str, Any]], *, worker_id: int = 0) -> int:
+        if not rows:
+            return 0
+        inserted = 0
+        with self._connect() as conn:
+            for row in rows:
+                url = (row.get("url") or "").strip()
+                if not url:
+                    continue
+                cur = conn.execute(
+                    """
+                    INSERT INTO url_catalog (
+                        url, source, source_query, category, file_type, mime_type, metadata, worker_id
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s)
+                    ON CONFLICT (url) DO NOTHING
+                    RETURNING id
+                    """,
+                    (
+                        url,
+                        row.get("source", "unknown"),
+                        row.get("source_query", ""),
+                        row.get("category", ""),
+                        row.get("file_type", ""),
+                        row.get("mime_type", ""),
+                        json.dumps(row.get("metadata") or {}),
+                        worker_id,
+                    ),
+                )
+                if cur.fetchone() is not None:
+                    inserted += 1
+            conn.commit()
+        return inserted
+
+    def claim_url_catalog_batch(self, count: int, *, worker_id: int = 0) -> list[dict[str, Any]]:
+        """Claim pending URLs for download workers (FOR UPDATE SKIP LOCKED)."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                UPDATE url_catalog
+                SET status = 'claimed', worker_id = %s
+                WHERE id IN (
+                    SELECT id FROM url_catalog
+                    WHERE status = 'pending'
+                    ORDER BY id
+                    LIMIT %s
+                    FOR UPDATE SKIP LOCKED
+                )
+                RETURNING id, url, source, source_query, category, file_type, mime_type, metadata
+                """,
+                (worker_id, count),
+            ).fetchall()
+            conn.commit()
+            return [dict(r) for r in rows]
+
+    def update_url_catalog_status(self, url: str, status: str) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE url_catalog SET status = %s WHERE url = %s",
+                (status, url),
+            )
+            conn.commit()
+
     @staticmethod
     def manifest_columns() -> list[str]:
         return list(MANIFEST_COLUMNS)

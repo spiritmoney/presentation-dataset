@@ -172,6 +172,8 @@ def stage_discover(ctx: StageContext) -> None:
             archive_rows=int(perf.get("archive_rows_per_query", 100)),
             archive_files_per_item=int(perf.get("archive_files_per_item", 3)),
             archive_max=int(perf.get("archive_max_per_discover", 2000)),
+            web_search_results_per_query=int(perf.get("web_search_results_per_query", 30)),
+            web_search_max_per_discover=int(perf.get("web_search_max_per_discover", 500)),
         )
         if added:
             logger.info("Discover: appended %d URLs to global queue", added)
@@ -185,7 +187,10 @@ def stage_discover(ctx: StageContext) -> None:
         return
 
     if pending_global_urls(ctx.paths["urls"]) == 0:
-        logger.warning("Discover: global queue empty — add data/bulk_urls.txt or archive sources")
+        logger.warning(
+            "Discover: global queue empty — web search and archive discovery may be rate-limited; "
+            "retry next batch or add bulk_urls.txt"
+        )
 
 
 def stage_download(ctx: StageContext) -> None:

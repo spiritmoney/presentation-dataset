@@ -1,0 +1,23 @@
+[Unit]
+Description=Presentation URL collectors (worker %i) — Common Crawl → PostgreSQL
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pipeline
+Group=pipeline
+WorkingDirectory=/opt/presentation-dataset-pipeline
+EnvironmentFile=/opt/presentation-dataset-pipeline/.env
+Environment=WORKER_COUNT=4
+Environment=WORKER_ID=%i
+ExecStart=/opt/presentation-dataset-pipeline/.venv/bin/python -m scripts.run_pipeline collect --pause-sec 2
+Restart=on-failure
+RestartSec=15
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=presentation-collect-%i
+
+[Install]
+WantedBy=multi-user.target

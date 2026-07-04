@@ -39,6 +39,12 @@ seed_sources:
     notes: "Design portfolio sites, Dribbble/Behance case studies with PDF exports"
     categories: [ui_ux, product_design, mobile_web]
 
+# Common Crawl CDX patterns (billions of historical web URLs)
+common_crawl_patterns:
+  - "*.pptx"
+  - "*.ppt"
+  - "*.pdf"
+
 # Tier 2: Search-driven discovery
 search_queries:
   - query: "filetype:pptx dashboard design presentation"
@@ -66,6 +72,12 @@ search_queries:
 archive_queries:
   - 'format:PDF AND (presentation OR "pitch deck") AND (charts OR dashboard OR infographic)'
   - 'format:PDF AND (annual report OR strategy) AND visualization'
+  - 'format:PDF AND (marketing OR branding) AND presentation'
+  - 'format:PDF AND (product OR roadmap) AND slides'
+  - 'format:PDF AND (sustainability OR ESG) AND report'
+  - 'format:PDF AND (cybersecurity OR security) AND framework'
+  - 'format:PDF AND (healthcare OR medical) AND presentation'
+  - 'format:PDF AND (engineering OR architecture) AND design'
 
 # Direct public presentation URLs (curated seeds for production discovery)
 direct_urls: []

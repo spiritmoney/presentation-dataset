@@ -29,7 +29,12 @@ download:
 
 discovery:
   enable_archive_org: true
-  enable_duckduckgo: false
+  enable_common_crawl: true
+  enable_web_search: true
+  common_crawl_limit: 10000
+  web_search_results_per_query: 40
+  web_search_max_per_discover: 800
+  web_search_follow_landing_pages: 15
 
 validation:
   allowed_extensions: [".ppt", ".pptx", ".pdf"]
@@ -106,6 +111,9 @@ performance:
     archive_rows_per_query: 200
     archive_files_per_item: 5
     archive_max_per_discover: 10000
+    web_search_results_per_query: 50
+    web_search_max_per_discover: 3000
+    common_crawl_limit: 15000
     lightweight_scoring: true
     skip_package_revalidate: true
     skip_excel: true
@@ -119,6 +127,9 @@ performance:
     archive_rows_per_query: 500
     archive_files_per_item: 8
     archive_max_per_discover: 25000
+    web_search_results_per_query: 80
+    web_search_max_per_discover: 8000
+    common_crawl_limit: 25000
     lightweight_scoring: true
     skip_package_revalidate: true
     skip_excel: true

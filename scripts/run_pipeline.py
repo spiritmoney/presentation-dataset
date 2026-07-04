@@ -18,7 +18,7 @@ from src.supervisor.state import RunStatus
 app = typer.Typer(help="Presentation dataset collection pipeline")
 console = Console()
 
-MODE_HELP = "turbo (default, 6M/12h scale) | fast | synthetic (dev only, not delivery-compliant)"
+MODE_HELP = "turbo (default) | fast | synthetic (dev only) | collect (URLs only, no download)"
 
 
 def _setup_logging() -> None:
@@ -87,6 +87,92 @@ def run(
 
 
 @app.command()
+def collect(
+    target_count: Optional[int] = typer.Option(None, "--target-count", help="URL catalog goal (default 6M)"),
+    pause_sec: float = typer.Option(2.0, "--pause-sec", help="Pause between discovery cycles"),
+):
+    """Discover presentation URLs (Common Crawl + search) → PostgreSQL catalog. No downloads."""
+    _setup_logging()
+    from src.config import Settings
+    from src.supervisor.collect_runner import run_url_collection
+
+    if target_count is not None:
+        os.environ["TARGET_COUNT"] = str(target_count)
+
+    settings = Settings()
+    worker_id = os.environ.get("WORKER_ID", "0")
+    worker_count = os.environ.get("WORKER_COUNT", "1")
+    console.print(
+        f"[bold green]URL collection[/bold green] worker {worker_id}/{worker_count} "
+        f"→ PostgreSQL url_catalog (links + metadata only)"
+    )
+
+    total = run_url_collection(
+        data_dir=Path(settings.data_dir),
+        target_count=target_count,
+        pause_sec=pause_sec,
+    )
+    console.print(f"\n[bold green]Catalog size: {total:,} URLs[/bold green]")
+
+
+@app.command()
+def download(
+    mode: str = typer.Option("turbo", "--mode", help="turbo | fast"),
+    batch: Optional[str] = typer.Option(None, "--batch", help="Batch ID"),
+    claim: int = typer.Option(5000, "--claim", help="URLs to claim from catalog per batch"),
+    resume: bool = typer.Option(True, "--resume/--fresh", help="Reserved for future batch checkpointing"),
+):
+    """Download + qualify files from url_catalog (run after collect)."""
+    _setup_logging()
+    _set_mode(mode)
+    from src.config import Settings
+    from src.pipeline.handlers import _paths
+    from src.storage.backend import get_store, use_postgres
+    import json
+
+    if not use_postgres():
+        raise typer.BadParameter("download requires PostgreSQL (DATABASE_URL)")
+
+    settings = Settings()
+    data_dir = Path(settings.data_dir)
+    paths = _paths(data_dir)
+    batch_id = batch or generate_batch_id()
+    rows = get_store().claim_url_catalog_batch(claim)
+    if not rows:
+        console.print("[yellow]No pending URLs in catalog[/yellow]")
+        raise typer.Exit(1)
+
+    queue_path = paths["urls"] / f"{batch_id}.jsonl"
+    queue_path.parent.mkdir(parents=True, exist_ok=True)
+    with queue_path.open("w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(
+                json.dumps(
+                    {
+                        "url": row["url"],
+                        "category": row.get("category", "catalog"),
+                        "source_query": row.get("source_query", "url_catalog"),
+                    }
+                )
+                + "\n"
+            )
+
+    console.print(f"[cyan]Claimed {len(rows)} URLs from catalog → batch {batch_id}[/cyan]")
+    from src.supervisor.stages import default_stages
+
+    registry = default_stages()
+    download_stages = ["download", "validate", "filter", "score", "dedupe", "package", "report"]
+    for stage_name in download_stages:
+        console.print(f"[dim]Stage: {stage_name}[/dim]")
+        registry.run_stage(stage_name, batch_id=batch_id, data_dir=data_dir)
+
+    from src.supervisor.progress import count_qualified_files
+
+    qualified = count_qualified_files(data_dir / "qualified")
+    console.print(f"[green]Batch {batch_id} done — qualified total: {qualified:,}[/green]")
+
+
+@app.command()
 def status():
     """Show pipeline progress metrics."""
     from src.config import Settings
@@ -114,8 +200,13 @@ def status():
     if use_postgres():
         from src.storage.backend import get_store
 
-        nbytes = get_store().database_size_bytes()
-        console.print(f"postgresql corpus: {nbytes / (1024**3):.2f} GB")
+        store = get_store()
+        catalog = store.count_url_catalog()
+        pending = store.count_url_catalog("pending")
+        console.print(f"url catalog: {catalog:,} total ({pending:,} pending download)")
+        nbytes = store.database_size_bytes()
+        if nbytes:
+            console.print(f"postgresql file corpus: {nbytes / (1024**3):.2f} GB")
 
 
 @app.command()

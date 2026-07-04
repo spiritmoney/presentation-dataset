@@ -20,3 +20,22 @@ CREATE TABLE IF NOT EXISTS dedupe_hashes (
     content_hash TEXT PRIMARY KEY,
     filename TEXT NOT NULL
 );
+
+-- URL catalog: links + metadata only (download later)
+CREATE TABLE IF NOT EXISTS url_catalog (
+    id BIGSERIAL PRIMARY KEY,
+    url TEXT NOT NULL UNIQUE,
+    source TEXT NOT NULL,
+    source_query TEXT DEFAULT '',
+    category TEXT DEFAULT '',
+    file_type TEXT DEFAULT '',
+    mime_type TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'pending',
+    metadata JSONB NOT NULL DEFAULT '{}',
+    worker_id INT DEFAULT 0,
+    discovered_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_url_catalog_status ON url_catalog (status);
+CREATE INDEX IF NOT EXISTS idx_url_catalog_source ON url_catalog (source);
+CREATE INDEX IF NOT EXISTS idx_url_catalog_discovered_at ON url_catalog (discovered_at);
