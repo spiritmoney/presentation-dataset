@@ -1,0 +1,68 @@
+# Quality scoring thresholds
+
+thresholds:
+  min_quality_score: 60
+  auto_accept_score: 75
+  review_queue_min: 60
+  review_queue_max: 74
+
+slide_count:
+  minimum: 5
+  preferred_min: 10
+
+file_size:
+  min_bytes: 10240        # 10 KB
+  max_bytes: 209715200    # 200 MB
+  preferred_min_bytes: 51200  # 50 KB
+
+text_density:
+  max_text_area_ratio: 0.65   # reject if >65% of slide area is text
+  max_chars_per_slide: 800
+  lecture_mode_threshold: 0.80  # very text-heavy = lecture
+
+graphics_density:
+  min_visual_elements_per_slide: 0.5
+  preferred_min: 1.5
+  visual_element_types:
+    - chart
+    - graph
+    - diagram
+    - image
+    - icon
+    - table
+    - infographic
+    - mockup
+
+visual_clarity:
+  min_sharpness_score: 0.55
+  max_blur_score: 0.45
+  min_resolution_dpi: 72
+  reject_if_pixelated: true
+
+design_modernity:
+  min_score: 0.50
+  reject_clip_art_heavy: true
+  reject_outdated_templates: true
+
+rejection_reasons:
+  CORRUPT: "File cannot be opened or is corrupted"
+  MISSING_URL: "Source URL not recorded"
+  LOW_SLIDE_COUNT: "Fewer than 5 slides/pages"
+  BLOCKLIST_F500: "Fortune 500 or subsidiary content"
+  BLOCKLIST_UNIVERSITY: "Elite U.S. university content"
+  BLOCKLIST_THINKTANK: "Think tank or research center content"
+  TEXT_HEAVY: "Excessive text density — lecture-style"
+  LOW_QUALITY: "Overall quality score below threshold"
+  DUPLICATE: "Duplicate of existing file"
+  GENERIC_TEMPLATE: "Generic or decorative template"
+  BLURRY: "Poor visual clarity or scan quality"
+  WRONG_FORMAT: "Not PPT, PPTX, or PDF"
+  FILE_TOO_LARGE: "Exceeds maximum file size"
+  FILE_TOO_SMALL: "Below minimum file size"
+  ROBOTS_DISALLOWED: "Blocked by robots.txt"
+  PUBLIC_INACCESSIBLE: "Source is not publicly accessible"
+  SOURCE_UNREACHABLE: "Original source URL is unreachable"
+  MARKETING_ONLY: "Marketing-only deck with minimal analytical content"
+  QUOTE_COLLECTION: "Quote collection without analytical content"
+  MINIMAL_CONTENT: "Minimal-content presentation"
+  IMAGE_GALLERY: "Image gallery without analytical content"

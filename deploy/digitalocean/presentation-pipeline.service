@@ -1,0 +1,23 @@
+[Unit]
+Description=Presentation dataset pipeline — collect until 6M qualified files
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pipeline
+Group=pipeline
+WorkingDirectory=/opt/presentation-dataset-pipeline
+EnvironmentFile=/opt/presentation-dataset-pipeline/.env
+ExecStart=/opt/presentation-dataset-pipeline/deploy/digitalocean/run-until-goal.sh
+Restart=on-failure
+RestartSec=30
+# Scale: many parallel downloads
+LimitNOFILE=65536
+# Log to journal
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=presentation-pipeline
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,189 @@
+Revised Delivery Requirements
+1. Delivery Requirements
+Category
+Requirement
+Acceptance Criteria
+Recommended
+Implementation
+File Format
+Deliver files in PPTX or
+PDF format
+File opens
+successfully without
+corruption
+Validate all files before
+packaging
+File Naming
+Consistent and unique file
+names
+No duplicate file
+names within
+delivery
+Use standardized naming
+convention
+Source
+Traceability
+Every file must have a
+recorded source URL
+Source URL present
+in audit log
+Store source URL during
+collection
+Batch Tracking
+Every file must belong to a
+delivery batch
+Batch ID assigned
+Generate batch identifier
+during packaging
+Public
+Availability
+Content must originate
+from publicly accessible
+sources
+Public Access Status
+= PASS
+Verify source accessibility
+before delivery
+Minimum
+Slide Count
+Each deck must contain at
+least 5 slides/pages
+≥ 5 slides/pages
+Automated validation
+Maximum
+Slide Count
+No maximum slide/page
+limit
+N/A
+Long-form reports and
+research publications are
+acceptable
+Source Status
+Original source URL
+should be reachable when
+possible
+URL status recorded
+Automated URL verification
+Audit Record
+Each delivered file must
+have an audit log entry
+Audit entry exists
+Populate audit template for
+every file
+2. Source Exclusion Requirements
+The objective of the collection is to obtain publicly available analytical and educational content from a broad
+range of organizations while avoiding highly represented institutional sources.
+The following sources should be excluded unless explicit written approval is provided:
+1
+Excluded Source Type
+Requirement
+Fortune 500
+Companies
+Do not collect or deliver files originating from Fortune 500 companies or their
+subsidiaries.
+Elite U.S. Universities
+Avoid content originating from major U.S. universities and institutions with
+significant public visibility and extensive online publication archives.
+Prestigious U.S.
+Research Centers
+Avoid content originating from leading U.S. research laboratories, federally
+funded research centers, think tanks, or nationally recognized research
+organizations.
+Explicitly Blocklisted
+Organizations
+Any organization added to future exclusion lists must be excluded from
+collection and delivery.
+Examples include large corporate investor-relations presentations, executive strategy decks, flagship
+university course materials, and research publications from highly represented U.S. institutions.
+The delivery team should prioritize content from diverse organizations, industry groups, regional
+institutions, professional associations, independent publishers, government agencies, and non-flagship
+educational institutions.
+3. Metadata Preservation Requirements
+Metadata preservation is a critical requirement of the delivery process.
+Mandatory Requirement
+The source URL must always be preserved.
+If the source URL is missing, the file should be considered incomplete and unsuitable for delivery.
+Preferred Metadata Fields
+The delivery team should preserve all available metadata whenever possible, including:
+Metadata Field
+Source URL
+Source Domain
+Download URL
+Original File Name
+Collection Timestamp
+2
+Metadata Field
+Download Timestamp
+Publication Date
+Author Information
+Organization Name
+Document Title
+Language
+File Size
+File Format
+Tags / Categories
+Crawl Metadata
+Processing Metadata
+Delivery Principle
+Retain all metadata by default.
+The downstream team can remove unnecessary fields later; however, metadata that is not preserved during
+collection cannot be recovered afterward.
+The collection pipeline should therefore be configured to maximize metadata retention while minimizing
+manual intervention.
+4. Data Completeness Requirements
+The delivery objective is not only to collect files but also to preserve the contextual information surrounding
+those files.
+Requirements:
+Requirement
+Description
+Preserve Raw Metadata
+All available metadata should be retained whenever possible.
+Preserve Source
+Relationships
+URLs, domains, and source references must remain linked to the file.
+Preserve Collection Context
+Collection timestamps and acquisition information should be
+retained.
+3
+Requirement
+Description
+Avoid Metadata Truncation
+Do not intentionally discard metadata fields unless instructed.
+Maintain Audit Traceability
+Every delivered file should remain traceable to its original source.
+The guiding principle is:
+More metadata is always preferable to less metadata.
+5. Document Quality and Interface Requirements
+All delivered files must maintain a professional graphical presentation quality.
+The objective is to collect documents that communicate information visually and analytically rather than
+through large volumes of plain text.
+Preferred Characteristics
+Preferred Elements
+Charts
+Graphs
+Dashboards
+Tables
+Process Diagrams
+Technical Diagrams
+Organizational Charts
+Data Visualizations
+Analytical Frameworks
+Structured Infographics
+Research Figures
+Educational Visual Content
+Quality Expectations
+The delivered file should remain a graphical document rather than a text document.
+The presentation should demonstrate visual structure, layout discipline, and analytical communication.
+4
+Files That Should Be Avoided
+Low-Quality Characteristics
+Text-heavy lecture notes
+Large blocks of continuous text
+Image galleries without analytical content
+Decorative presentations
+Marketing-only slide decks
+Generic templates
+Quote collections
+Minimal-content presentations
+The overall documentation quality must remain consistent across the entire delivery set.
+5

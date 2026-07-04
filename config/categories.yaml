@@ -1,0 +1,110 @@
+# Target content categories for discovery and tagging
+
+categories:
+  - id: ui_ux
+    name: "UI/UX Design"
+    keywords: [ui, ux, user interface, user experience, wireframe, prototype, design system]
+    priority: high
+
+  - id: product_design
+    name: "Product Design"
+    keywords: [product design, product roadmap, feature, mvp, product launch]
+    priority: high
+
+  - id: data_viz
+    name: "Dashboards & Data Visualization"
+    keywords: [dashboard, data visualization, chart, graph, analytics, kpi, metrics]
+    priority: high
+
+  - id: infographics
+    name: "Infographics"
+    keywords: [infographic, visual summary, data story]
+    priority: high
+
+  - id: startup_pitch
+    name: "Startup Pitch Decks"
+    keywords: [pitch deck, seed round, series a, startup, founder]
+    priority: high
+
+  - id: marketing_branding
+    name: "Marketing & Branding"
+    keywords: [marketing, branding, campaign, go-to-market, gtm]
+    priority: medium
+
+  - id: business_strategy
+    name: "Business Strategy"
+    keywords: [strategy, business model, competitive analysis, swot]
+    priority: medium
+
+  - id: software_tech
+    name: "Software & Technology"
+    keywords: [software, saas, platform, api, architecture, microservices]
+    priority: high
+
+  - id: ai_ml
+    name: "Artificial Intelligence & Machine Learning"
+    keywords: [artificial intelligence, machine learning, deep learning, llm, neural network]
+    priority: high
+
+  - id: cybersecurity
+    name: "Cybersecurity"
+    keywords: [cybersecurity, security, threat, vulnerability, compliance]
+    priority: medium
+
+  - id: cloud_computing
+    name: "Cloud Computing"
+    keywords: [cloud, aws, azure, gcp, kubernetes, devops]
+    priority: medium
+
+  - id: project_management
+    name: "Project Management"
+    keywords: [project management, agile, scrum, kanban, roadmap]
+    priority: medium
+
+  - id: consulting
+    name: "Consulting Frameworks"
+    keywords: [framework, consulting, mckinsey-style, bcg, methodology]
+    priority: medium
+    notes: "Exclude decks branded for F500 consulting firms if primary"
+
+  - id: healthcare
+    name: "Healthcare"
+    keywords: [healthcare, medical, clinical, patient, pharma]
+    priority: medium
+
+  - id: engineering
+    name: "Engineering & Architecture"
+    keywords: [engineering, architecture, structural, mechanical, civil]
+    priority: medium
+
+  - id: finance
+    name: "Finance"
+    keywords: [finance, financial model, investment, portfolio, fintech]
+    priority: medium
+    notes: "Exclude Fortune 500 financial institutions"
+
+  - id: sustainability
+    name: "Sustainability"
+    keywords: [sustainability, esg, carbon, renewable, green]
+    priority: low
+
+  - id: hr_leadership
+    name: "HR & Leadership"
+    keywords: [leadership, human resources, talent, culture, org development]
+    priority: low
+
+  - id: ecommerce
+    name: "E-commerce"
+    keywords: [ecommerce, e-commerce, online retail, conversion]
+    priority: medium
+
+  - id: mobile_web
+    name: "Mobile & Web Design"
+    keywords: [mobile app, responsive, web design, landing page]
+    priority: high
+
+# Tagging rules
+tagging:
+  max_tags_per_file: 5
+  min_keyword_matches: 1
+  use_ai_classification: true

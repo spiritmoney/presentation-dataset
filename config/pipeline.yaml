@@ -1,0 +1,134 @@
+# Global pipeline configuration — sized for 6M files / 12 hours
+
+pipeline:
+  version: "0.2.0"
+  target_count: 6000000
+  collection_window_hours: 12
+  # Required sustained rate: ~500,000 files/hour (~139/sec)
+  project_deadline: "2026-07-05"
+
+paths:
+  raw: "raw"
+  staging: "staging"
+  qualified: "qualified"
+  rejected: "rejected"
+  audit: "audit"
+  manifests: "manifests"
+  urls: "staging/urls"
+
+batch:
+  id_format: "BATCH-{date}-{seq:03d}"
+  files_per_batch: 20000
+
+download:
+  timeout_sec: 30
+  retries: 2
+  max_concurrent: 256
+  user_agent: "PresentationDatasetBot/0.2 (+research; contact@example.com)"
+  respect_robots_txt: true
+
+discovery:
+  enable_archive_org: true
+  enable_duckduckgo: false
+
+validation:
+  allowed_extensions: [".ppt", ".pptx", ".pdf"]
+  min_slide_count: 5
+  max_file_size_mb: 200
+  min_file_size_kb: 10
+
+filtering:
+  blocklist_dirs:
+    - "config/blocklists/fortune500.yaml"
+    - "config/blocklists/elite_universities.yaml"
+    - "config/blocklists/think_tanks.yaml"
+  blocklist_match_fields:
+    - source_url
+    - download_domain
+    - organization
+    - document_title
+    - original_filename
+
+scoring:
+  pass_threshold: 60
+  auto_accept_threshold: 75
+  review_queue_threshold: 60
+  weights:
+    graphics_density: 0.30
+    text_density: 0.20
+    visual_clarity: 0.20
+    design_modernity: 0.15
+    slide_structure: 0.15
+
+deduplication:
+  methods:
+    - content_hash
+  keep: highest_quality
+
+delivery:
+  filename_format: "{batch_id}_{seq:08d}{ext}"
+  manifest_format: csv
+  package_format: zip_shards
+  files_per_zip_shard: 10000
+
+supervisor:
+  run_until_goal: true
+  auto_start_on_batch: true
+  target_count: 6000000
+  collection_window_hours: 12
+  stages:
+    - discover
+    - download
+    - validate
+    - filter
+    - score
+    - dedupe
+    - package
+    - report
+  checkpoint_interval_sec: 30
+  heartbeat_interval_sec: 30
+  batch_pause_sec: 0
+  stall_timeout_sec: 900
+  refill_url_queue_threshold: 50000
+  stage_retry_min_wait_sec: 2
+  stage_retry_max_wait_sec: 60
+  max_stagnant_batches: 1000000
+  ignore_shutdown_signals: true
+
+# Throughput tuning — compliance gates unchanged; I/O and scoring optimized for scale
+performance:
+  fast:
+    batch_pause_sec: 0
+    refill_threshold: 20000
+    urls_per_batch: 10000
+    download_workers: 128
+    process_workers: 32
+    archive_rows_per_query: 200
+    archive_files_per_item: 5
+    archive_max_per_discover: 10000
+    lightweight_scoring: true
+    skip_package_revalidate: true
+    skip_excel: true
+    disable_stagnant_pause: true
+  turbo:
+    batch_pause_sec: 0
+    refill_threshold: 50000
+    urls_per_batch: 20000
+    download_workers: 256
+    process_workers: 64
+    archive_rows_per_query: 500
+    archive_files_per_item: 8
+    archive_max_per_discover: 25000
+    lightweight_scoring: true
+    skip_package_revalidate: true
+    skip_excel: true
+    disable_stagnant_pause: true
+
+reporting:
+  interval_hours: 1
+  metrics:
+    - files_accepted
+    - acceptance_rate
+    - files_per_hour
+    - eta_hours
+    - storage_gb

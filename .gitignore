@@ -1,0 +1,44 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment
+.env
+.env.local
+
+# Data (runtime artifacts — keep data/.gitkeep only)
+data/*
+!data/.gitkeep
+*.ppt
+*.pptx
+*.pdf
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+data/logs/
+*.log
+
+# Supervisor runtime state (resume checkpoints — keep locally, don't commit)
+data/state/
+
+# Temp
+tmp/
+temp/
+.cache/

@@ -1,0 +1,92 @@
+# Seed sources and crawler configuration
+# Add high-yield public document repositories and category-specific portals
+
+global:
+  max_depth: 3
+  follow_external_links: false
+  file_extensions: [".ppt", ".pptx", ".pdf"]
+
+# Tier 1: High-volume document platforms and government portals
+seed_sources:
+  - name: slideshare_alternatives
+    enabled: true
+    tier: 1
+    notes: "Research public slide-sharing platforms with API or sitemap access"
+    categories: [ui_ux, data_viz, startup_pitch, marketing_branding]
+
+  - name: government_open_data
+    enabled: true
+    tier: 1
+    notes: "U.S. federal and state agency presentation archives"
+    categories: [sustainability, healthcare, engineering]
+    exclude_blocklist: true
+
+  - name: industry_associations
+    enabled: true
+    tier: 1
+    notes: "Professional association conference presentations"
+    categories: [consulting, project_management, engineering]
+
+  - name: startup_ecosystem
+    enabled: true
+    tier: 1
+    notes: "Accelerator demo days, pitch event archives"
+    categories: [startup_pitch, product_design]
+
+  - name: design_communities
+    enabled: true
+    tier: 1
+    notes: "Design portfolio sites, Dribbble/Behance case studies with PDF exports"
+    categories: [ui_ux, product_design, mobile_web]
+
+# Tier 2: Search-driven discovery
+search_queries:
+  - query: "filetype:pptx dashboard design presentation"
+    category: data_viz
+  - query: "filetype:pdf infographic report visualization"
+    category: infographics
+  - query: "filetype:pptx UX design case study"
+    category: ui_ux
+  - query: "filetype:pptx startup pitch deck template -university"
+    category: startup_pitch
+  - query: "filetype:pdf product roadmap presentation"
+    category: product_design
+  - query: "filetype:pptx data visualization best practices"
+    category: data_viz
+  - query: "filetype:pdf annual report charts graphs -site:edu"
+    category: finance
+  - query: "filetype:pptx machine learning presentation -site:stanford.edu -site:mit.edu"
+    category: ai_ml
+  - query: "filetype:pptx cybersecurity framework presentation"
+    category: cybersecurity
+  - query: "filetype:pdf supply chain visualization"
+    category: sustainability
+
+# Archive.org search queries (public documents)
+archive_queries:
+  - 'format:PDF AND (presentation OR "pitch deck") AND (charts OR dashboard OR infographic)'
+  - 'format:PDF AND (annual report OR strategy) AND visualization'
+
+# Direct public presentation URLs (curated seeds for production discovery)
+direct_urls: []
+# allowlist: []
+
+# Domain denylist (always skip)
+denylist:
+  - "*.edu"  # Broad edu exclusion — refine with blocklist for exceptions
+  - "linkedin.com"
+  - "facebook.com"
+  - "twitter.com"
+  - "instagram.com"
+
+# Rate limits per domain (requests per second)
+rate_limits:
+  default: 1
+  "docs.google.com": 0.5
+  "www.slideshare.net": 0.3
+
+crawler_settings:
+  concurrent_requests: 32
+  download_delay_ms: 500
+  retry_http_codes: [429, 500, 502, 503, 504]
+  max_retries: 3
